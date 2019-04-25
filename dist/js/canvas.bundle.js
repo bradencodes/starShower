@@ -134,11 +134,15 @@ function Star(x, y, radius, color) {
 }
 
 Star.prototype.draw = function () {
+    c.save();
     c.beginPath();
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
     c.fillStyle = this.color;
+    c.shadowColor = '#e3eaef';
+    c.shadowBlur = 20;
     c.fill();
     c.closePath();
+    c.restore();
 };
 
 Star.prototype.update = function () {
@@ -175,11 +179,15 @@ function MiniStar(x, y, radius, color) {
 }
 
 MiniStar.prototype.draw = function () {
+    c.save();
     c.beginPath();
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    c.fillStyle = 'rgba(255, 0, 0, ' + this.opacity + ')';
+    c.fillStyle = 'rgba(227, 234, 239, ' + this.opacity + ')';
+    c.shadowColor = '#e3eaef';
+    c.shadowBlur = 20;
     c.fill();
     c.closePath();
+    c.restore();
 };
 
 MiniStar.prototype.update = function () {
@@ -198,22 +206,58 @@ MiniStar.prototype.update = function () {
     this.opacity -= 1 / this.ttl;
 };
 
+function createMountainRange(mountainAmount, height, color) {
+    for (var i = 0; i < mountainAmount; i++) {
+        var mountainWidth = canvas.width / mountainAmount;
+        c.beginPath();
+        c.moveTo(i * mountainWidth, canvas.height);
+        c.lineTo(i * mountainWidth + mountainWidth + 325, canvas.height);
+        c.lineTo(i * mountainWidth + mountainWidth / 2, canvas.height - height);
+        c.lineTo(i * mountainWidth - 325, canvas.height);
+        c.fillStyle = color;
+        c.fill();
+        c.closePath();
+    }
+}
+
 // Implementation
+var backgroundGradient = c.createLinearGradient(0, 0, 0, canvas.height);
+backgroundGradient.addColorStop(0, '#171e26');
+backgroundGradient.addColorStop(1, '#3f586b');
+
 var stars = void 0;
 var miniStars = void 0;
+var backgroundStars = void 0;
 function init() {
     stars = [];
     miniStars = [];
+    backgroundStars = [];
 
     for (var i = 0; i < 1; i++) {
-        stars.push(new Star(canvas.width / 2, 30, 30, "blue"));
+        stars.push(new Star(canvas.width / 2, 30, 30, "#e3eaef"));
+    }
+
+    for (var _i = 0; _i < 150; _i++) {
+        var x = Math.random() * canvas.width;
+        var y = Math.random() * canvas.height;
+        var radius = Math.random() * 3;
+        backgroundStars.push(new Star(x, y, radius, "white"));
     }
 }
 
 // Animation Loop
 function animate() {
     requestAnimationFrame(animate);
-    c.clearRect(0, 0, canvas.width, canvas.height);
+    c.fillStyle = backgroundGradient;
+    c.fillRect(0, 0, canvas.width, canvas.height);
+
+    backgroundStars.forEach(function (backgroundStar) {
+        backgroundStar.draw();
+    });
+
+    createMountainRange(1, canvas.height * .9, "#384551");
+    createMountainRange(2, canvas.height * .5, "#2b3843");
+    createMountainRange(3, canvas.height * .35, "#26333e");
 
     stars.forEach(function (star, i) {
         star.update();
