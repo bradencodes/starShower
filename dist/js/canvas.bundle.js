@@ -120,14 +120,20 @@ addEventListener('resize', function () {
 });
 
 // Objects
-function Object(x, y, radius, color) {
+function Star(x, y, radius, color) {
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.color = color;
+    this.velocity = {
+        x: 0,
+        y: 3
+    };
+    this.friction = 0.8;
+    this.gravity = 0.3;
 }
 
-Object.prototype.draw = function () {
+Star.prototype.draw = function () {
     c.beginPath();
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
     c.fillStyle = this.color;
@@ -135,17 +141,57 @@ Object.prototype.draw = function () {
     c.closePath();
 };
 
-Object.prototype.update = function () {
+Star.prototype.update = function () {
     this.draw();
+
+    // When ball hits bottom of screen
+    if (this.y + this.radius + this.velocity.y > canvas.height) {
+        this.velocity.y *= -this.friction;
+    } else {
+        this.velocity.y += this.gravity;
+    }
+
+    this.y += this.velocity.y;
+};
+
+function MiniStar(x, y, radius, color) {
+    Star.call(this, x, y, radius, color);
+    this.velocity = {
+        x: 0,
+        y: 3
+    };
+    this.friction = 0.8;
+    this.gravity = 0.3;
+}
+
+MiniStar.prototype.draw = function () {
+    c.beginPath();
+    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    c.fillStyle = this.color;
+    c.fill();
+    c.closePath();
+};
+
+MiniStar.prototype.update = function () {
+    this.draw();
+
+    // When ball hits bottom of screen
+    if (this.y + this.radius + this.velocity.y > canvas.height) {
+        this.velocity.y *= -this.friction;
+    } else {
+        this.velocity.y += this.gravity;
+    }
+
+    this.y += this.velocity.y;
 };
 
 // Implementation
-var objects = void 0;
+var stars = void 0;
 function init() {
-    objects = [];
+    stars = [];
 
-    for (var i = 0; i < 400; i++) {
-        // objects.push()
+    for (var i = 0; i < 1; i++) {
+        stars.push(new Star(canvas.width / 2, 30, 30, "blue"));
     }
 }
 
@@ -154,9 +200,9 @@ function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    // objects.forEach(object => {
-    //  object.update()
-    // })
+    stars.forEach(function (star) {
+        star.update();
+    });
 }
 
 init();
