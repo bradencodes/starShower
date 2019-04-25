@@ -147,6 +147,7 @@ Star.prototype.update = function () {
     // When ball hits bottom of screen
     if (this.y + this.radius + this.velocity.y > canvas.height) {
         this.velocity.y *= -this.friction;
+        this.shatter();
     } else {
         this.velocity.y += this.gravity;
     }
@@ -154,20 +155,29 @@ Star.prototype.update = function () {
     this.y += this.velocity.y;
 };
 
+Star.prototype.shatter = function () {
+    this.radius -= 3;
+    for (var i = 0; i < 8; i++) {
+        miniStars.push(new MiniStar(this.x, this.y, 2));
+    }
+};
+
 function MiniStar(x, y, radius, color) {
     Star.call(this, x, y, radius, color);
     this.velocity = {
-        x: 0,
-        y: 3
+        x: _utils2.default.randomIntFromRange(-5, 5),
+        y: _utils2.default.randomIntFromRange(-15, 15)
     };
     this.friction = 0.8;
-    this.gravity = 0.3;
+    this.gravity = 0.1;
+    this.ttl = 500;
+    this.opacity = 1;
 }
 
 MiniStar.prototype.draw = function () {
     c.beginPath();
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    c.fillStyle = this.color;
+    c.fillStyle = 'rgba(255, 0, 0, ' + this.opacity + ')';
     c.fill();
     c.closePath();
 };
@@ -182,13 +192,18 @@ MiniStar.prototype.update = function () {
         this.velocity.y += this.gravity;
     }
 
+    this.x += this.velocity.x;
     this.y += this.velocity.y;
+    this.ttl -= 1;
+    this.opacity -= 1 / this.ttl;
 };
 
 // Implementation
 var stars = void 0;
+var miniStars = void 0;
 function init() {
     stars = [];
+    miniStars = [];
 
     for (var i = 0; i < 1; i++) {
         stars.push(new Star(canvas.width / 2, 30, 30, "blue"));
@@ -200,8 +215,18 @@ function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    stars.forEach(function (star) {
+    stars.forEach(function (star, i) {
         star.update();
+        if (star.radius < 1) {
+            stars.splice(i, 1);
+        }
+    });
+
+    miniStars.forEach(function (miniStar, i) {
+        miniStar.update();
+        if (miniStar.ttl < 1) {
+            miniStars.splice(i, 1);
+        }
     });
 }
 
