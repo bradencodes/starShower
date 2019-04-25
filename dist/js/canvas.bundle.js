@@ -108,18 +108,9 @@ var c = canvas.getContext('2d');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
-var mouse = {
-    x: innerWidth / 2,
-    y: innerHeight / 2
-};
-
 var colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66'];
 
 // Event Listeners
-addEventListener('mousemove', function (event) {
-    mouse.x = event.clientX;
-    mouse.y = event.clientY;
-});
 
 addEventListener('resize', function () {
     canvas.width = innerWidth;
@@ -154,7 +145,7 @@ function init() {
     objects = [];
 
     for (var i = 0; i < 400; i++) {
-        // objects.push();
+        // objects.push()
     }
 }
 
@@ -163,10 +154,9 @@ function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
 
-    c.fillText('HTML CANVAS BOILERPLATE', mouse.x, mouse.y);
     // objects.forEach(object => {
-    //  object.update();
-    // });
+    //  object.update()
+    // })
 }
 
 init();
