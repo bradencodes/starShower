@@ -126,11 +126,11 @@ function Star(x, y, radius, color) {
     this.radius = radius;
     this.color = color;
     this.velocity = {
-        x: 0,
+        x: _utils2.default.randomIntFromRange(-4, 4),
         y: 3
     };
-    this.friction = 0.8;
-    this.gravity = 0.3;
+    this.friction = 0.6;
+    this.gravity = 0.5;
 }
 
 Star.prototype.draw = function () {
@@ -156,6 +156,12 @@ Star.prototype.update = function () {
         this.velocity.y += this.gravity;
     }
 
+    // When ball hits side of screen
+    if (this.x + this.radius + this.velocity.x > canvas.width || this.x + this.radius + this.velocity.x < 0) {
+        this.velocity.x *= -1;
+    }
+
+    this.x += this.velocity.x;
     this.y += this.velocity.y;
 };
 
@@ -228,16 +234,15 @@ backgroundGradient.addColorStop(1, '#3f586b');
 var stars = void 0;
 var miniStars = void 0;
 var backgroundStars = void 0;
+var ticker = 0;
+var randomSpawnRate = 75;
+
 function init() {
     stars = [];
     miniStars = [];
     backgroundStars = [];
 
-    for (var i = 0; i < 1; i++) {
-        stars.push(new Star(canvas.width / 2, 30, 30, "#e3eaef"));
-    }
-
-    for (var _i = 0; _i < 150; _i++) {
+    for (var i = 0; i < 150; i++) {
         var x = Math.random() * canvas.width;
         var y = Math.random() * canvas.height;
         var radius = Math.random() * 3;
@@ -272,6 +277,14 @@ function animate() {
             miniStars.splice(i, 1);
         }
     });
+
+    ticker++;
+
+    if (ticker % randomSpawnRate === 0) {
+        var x = Math.random() * canvas.width;
+        stars.push(new Star(x, -100, 12, "white"));
+        randomSpawnRate = _utils2.default.randomIntFromRange(75, 300);
+    }
 }
 
 init();
