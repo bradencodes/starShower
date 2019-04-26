@@ -149,7 +149,7 @@ Star.prototype.update = function () {
     this.draw();
 
     // When ball hits bottom of screen
-    if (this.y + this.radius + this.velocity.y > canvas.height) {
+    if (this.y + this.radius + this.velocity.y > canvas.height - groundHeight) {
         this.velocity.y *= -this.friction;
         this.shatter();
     } else {
@@ -159,6 +159,7 @@ Star.prototype.update = function () {
     // When ball hits side of screen
     if (this.x + this.radius + this.velocity.x > canvas.width || this.x + this.radius + this.velocity.x < 0) {
         this.velocity.x *= -1;
+        this.shatter();
     }
 
     this.x += this.velocity.x;
@@ -200,7 +201,7 @@ MiniStar.prototype.update = function () {
     this.draw();
 
     // When ball hits bottom of screen
-    if (this.y + this.radius + this.velocity.y > canvas.height) {
+    if (this.y + this.radius + this.velocity.y > canvas.height - groundHeight) {
         this.velocity.y *= -this.friction;
     } else {
         this.velocity.y += this.gravity;
@@ -236,6 +237,7 @@ var miniStars = void 0;
 var backgroundStars = void 0;
 var ticker = 0;
 var randomSpawnRate = 75;
+var groundHeight = 100;
 
 function init() {
     stars = [];
@@ -263,6 +265,8 @@ function animate() {
     createMountainRange(1, canvas.height * .9, "#384551");
     createMountainRange(2, canvas.height * .5, "#2b3843");
     createMountainRange(3, canvas.height * .35, "#26333e");
+    c.fillStyle = "#182028";
+    c.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
 
     stars.forEach(function (star, i) {
         star.update();
@@ -281,8 +285,9 @@ function animate() {
     ticker++;
 
     if (ticker % randomSpawnRate === 0) {
-        var x = Math.random() * canvas.width;
-        stars.push(new Star(x, -100, 12, "white"));
+        var radius = 12;
+        var x = Math.random() * (canvas.width - 2 * radius) + radius;
+        stars.push(new Star(x, -100, radius, "white"));
         randomSpawnRate = _utils2.default.randomIntFromRange(75, 300);
     }
 }
